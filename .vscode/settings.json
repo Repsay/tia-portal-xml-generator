@@ -1,0 +1,8 @@
+{
+    "python.analysis.extraPaths": [
+        "C:\\Users\\LTD475\\Documents\\GitHub\\tia-portal-xml-generator"
+    ],
+    "python.analysis.include": [
+        "C:\\Users\\LTD475\\Documents\\GitHub\\tia-portal-xml-generator\\**"
+    ]
+}
