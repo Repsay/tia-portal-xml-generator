@@ -1,4 +1,4 @@
-from typing import Optional, Protocol, Self, Union
+from typing import Any, Optional, Protocol, Self, Union
 import xml.etree.ElementTree as ET
 
 class ID:
@@ -23,15 +23,24 @@ class XMLElement(Protocol):
     """The name of the XML element."""
     element: ET.Element
     """The XML element."""
-    id: Optional[str]
+    id: Optional[Any]
     """The ID of the XML element."""
     children: list[Self]
+
+    def add(self, child: Union[list[Self], Self]) -> None:
+        """Adds a child element to the XML element."""
+        ...
+
+    def remove(self, child: Union[list[Self], Self]) -> None:
+        """Removes a child element from the XML element."""
+        ...
 
     def build(self) -> ET.Element:
         """Builds the XML element."""
         ...
 
-class Basis(XMLElement):
+
+class XMLBase(XMLElement):
     """Protocol for all basis classes."""
     element_name: str
     """The name of the XML element."""
@@ -39,7 +48,7 @@ class Basis(XMLElement):
     """The XML element."""
     children: list[XMLElement]
     """The child elements of the XML element."""
-    id: Optional[str]
+    id: Optional[Union[str, int]]
     """The ID of the XML element."""
     global_id: ID = ID()
 

@@ -1,5 +1,5 @@
 from tia_xml_generator.elements.attribute_list import AttributeList
-from tia_xml_generator.elements.basis import Basis
+from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
 
 from tia_xml_generator.elements.comment import Comment
@@ -46,13 +46,15 @@ class AttributeListMember(AttributeList):
     def external_writable(self, external_writable: bool) -> None:
         self.__external_writable.text = "true" if external_writable else "false"
 
-class Member(Basis):
+class Member(XMLBase):
     element_name = "Member"
 
     __comment = None
 
     def __init__(self, name: str, type: str):
         super().__init__()
+        self.name = name
+        self.type = type
         self.element = ET.Element(self.element_name, {"Name": name, "Datatype": type})
         self.load_attribute_list()
 

@@ -1,7 +1,7 @@
-from tia_xml_generator.elements.basis import Basis
+from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
 
-class AttributeList(Basis):
+class AttributeList(XMLBase):
     element_name = "AttributeList"
 
     def __init__(self):

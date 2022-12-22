@@ -327,7 +327,7 @@
                     </MultilingualText>
                 </ObjectList>
             </SW.Blocks.CompileUnit>
-            <SW.Blocks.CompileUnit ID="28" CompositionName="CompileUnits">
+            <SW.Blocks.CompileUnit ID="23" CompositionName="CompileUnits">
                 <AttributeList>
                     <NetworkSource>
                         <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v3">
@@ -365,9 +365,9 @@
                     </NetworkSource>
                 </AttributeList>
                 <ObjectList>
-                    <MultilingualText ID="29" CompositionName="Title">
+                    <MultilingualText ID="24" CompositionName="Title">
                         <ObjectList>
-                            <MultilingualTextItem ID="2B" CompositionName="Items">
+                            <MultilingualTextItem ID="26" CompositionName="Items">
                                 <AttributeList>
                                     <Text>End of Cycle Reached / End of Production</Text>
                                     <Culture>en-US</Culture>
@@ -375,9 +375,9 @@
                             </MultilingualTextItem>
                         </ObjectList>
                     </MultilingualText>
-                    <MultilingualText ID="2A" CompositionName="Comment">
+                    <MultilingualText ID="25" CompositionName="Comment">
                         <ObjectList>
-                            <MultilingualTextItem ID="2C" CompositionName="Items">
+                            <MultilingualTextItem ID="27" CompositionName="Items">
                                 <AttributeList>
                                     <Text>No Phase Active</Text>
                                     <Culture>en-US</Culture>
@@ -387,7 +387,7 @@
                     </MultilingualText>
                 </ObjectList>
             </SW.Blocks.CompileUnit>
-            <SW.Blocks.CompileUnit ID="23" CompositionName="CompileUnits">
+            <SW.Blocks.CompileUnit ID="28" CompositionName="CompileUnits">
                 <AttributeList>
                     <NetworkSource>
                         <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v3">
@@ -412,9 +412,9 @@
                     </NetworkSource>
                 </AttributeList>
                 <ObjectList>
-                    <MultilingualText ID="24" CompositionName="Title">
+                    <MultilingualText ID="29" CompositionName="Title">
                         <ObjectList>
-                            <MultilingualTextItem ID="26" CompositionName="Items">
+                            <MultilingualTextItem ID="2B" CompositionName="Items">
                                 <AttributeList>
                                     <Text>Pause Command</Text>
                                     <Culture>en-US</Culture>
@@ -422,9 +422,9 @@
                             </MultilingualTextItem>
                         </ObjectList>
                     </MultilingualText>
-                    <MultilingualText ID="25" CompositionName="Comment">
+                    <MultilingualText ID="2A" CompositionName="Comment">
                         <ObjectList>
-                            <MultilingualTextItem ID="27" CompositionName="Items">
+                            <MultilingualTextItem ID="2C" CompositionName="Items">
                                 <AttributeList>
                                     <Text>Pause command received</Text>
                                     <Culture>en-US</Culture>

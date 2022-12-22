@@ -1,11 +1,11 @@
 from tia_xml_generator.elements.attribute_list import AttributeList
-from tia_xml_generator.elements.basis import Basis
+from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
 
 from tia_xml_generator.elements.object_list import ObjectList
 
-class _MulitilingualTextItem(Basis):
-    element_name = "MultiLingualTextItem"
+class _MulitilingualTextItem(XMLBase):
+    element_name = "MultilingualTextItem"
 
     def __init__(self, text: str, language: str):
         super().__init__()
@@ -42,7 +42,7 @@ class _MulitilingualTextItem(Basis):
     def language(self, language: str) -> None:
         self.__language.text = language
 
-class MultilingualText(Basis):
+class MultilingualText(XMLBase):
     element_name = "MultilingualText"
 
     def __init__(self, composition_name: str):

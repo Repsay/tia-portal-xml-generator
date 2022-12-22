@@ -18,7 +18,7 @@ setup(
     author_email="jdelahaije@gmail.com",
     license="MIT",
     python_requires=">=3.11",
-    requires=["pandas", "openpyxl"],
+    requires=[],
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Intended Audience :: Developers",

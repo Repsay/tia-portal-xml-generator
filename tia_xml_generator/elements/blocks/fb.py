@@ -5,7 +5,7 @@ from tia_xml_generator.elements.multilingual_text import MultilingualText
 from tia_xml_generator.enums import ProgrammingLanguage
 from tia_xml_generator.elements.attribute_list import AttributeList
 
-from tia_xml_generator.elements.basis import Basis
+from tia_xml_generator.elements.basis import XMLBase
 from tia_xml_generator.elements.blocks import Block
 from tia_xml_generator.elements.interface import Interface
 from tia_xml_generator.elements.member import Member
@@ -156,7 +156,13 @@ class AttributeListFB(AttributeList):
 
 class ObjectListFB(ObjectList):
 
+    network_groups: dict[str, int]
+
+    networks: dict[str, dict[int, CompileUnit]]
+
     def __init__(self, name: str, description: str):
+        self.network_groups = {}
+        self.networks = {}
         super().__init__()
         self.__title = MultilingualText("Title")
         self.__comment = MultilingualText("Comment")
@@ -167,12 +173,42 @@ class ObjectListFB(ObjectList):
         self.__title.add_text(name)
         self.__comment.add_text(description)
 
-    def add_network(self, name: str, comment: str, programming_language: ProgrammingLanguage) -> CompileUnit:
+    def add_network(self, name: str, comment: str, group: str, order: int, programming_language: ProgrammingLanguage) -> CompileUnit:
+        if group not in self.network_groups:
+            raise ValueError(f"Group {group} not found")
+        if group not in self.networks:
+            self.networks[group] = {}
+
+        if order in self.networks[group]:
+            for i in range(max(self.network_groups.values()), order, -1):
+                self.networks[group][i] = self.networks[group][i - 1]
+
         network = CompileUnit(name, programming_language, comment)
-        self.add(network)
+        self.networks[group][order] = network
+
         return network
 
-class FB(Basis, Block):
+    def add_network_group(self, name: str, comment: str, order: int, programming_language: ProgrammingLanguage) -> None:
+        if name in self.network_groups:
+            raise ValueError(f"Group {name} already exists")
+        if order in self.network_groups.values():
+            for i in range(max(self.network_groups.values()), order, -1):
+                for key, value in self.network_groups.items():
+                    if value == i:
+                        self.network_groups[key] = i + 1
+        self.network_groups[name] = order
+
+        self.add_network(f"***{name}***", comment, name, 0, programming_language)
+
+    def build(self) -> ET.Element:
+        for group in dict(sorted(self.network_groups.items(), key=lambda x: x[1])):
+            for network in dict(sorted(self.networks[group].items(), key=lambda x: x[0])).values():
+                self.element.append(network.build())
+        self.element.extend([self.__title.build(), self.__comment.build()])
+
+        return self.element
+
+class FB(XMLBase, Block):
     element_name = "SW.Blocks.FB"
     attribute_list: AttributeListFB
 
@@ -212,11 +248,54 @@ class FB(Basis, Block):
     def add_static(self, name: str, data_type: str) -> Member:
         return self.attribute_list.interface.sections.static.add_member(name, data_type)
 
-    def add_network(self, name: str, comment: str, programming_language: Optional[ProgrammingLanguage] = None) -> CompileUnit:
+    def get_input(self, name: str) -> Optional[Member]:
+        return self.attribute_list.interface.sections.input.get_member(name)
+
+    def get_output(self, name: str) -> Optional[Member]:
+        return self.attribute_list.interface.sections.output.get_member(name)
+
+    def get_in_out(self, name: str) -> Optional[Member]:
+        return self.attribute_list.interface.sections.in_out.get_member(name)
+
+    def get_temp(self, name: str) -> Optional[Member]:
+        return self.attribute_list.interface.sections.temp.get_member(name)
+
+    def get_constant(self, name: str) -> Optional[Member]:
+        return self.attribute_list.interface.sections.constant.get_member(name)
+
+    def get_static(self, name: str) -> Optional[Member]:
+        return self.attribute_list.interface.sections.static.get_member(name)
+
+    def add_network(self, name: str, comment: str, group: str, order: Optional[int] = None, programming_language: Optional[ProgrammingLanguage] = None) -> CompileUnit:
         programming_language = programming_language if programming_language is not None else self.programming_language
         if programming_language is None:
             raise ValueError("Programming language is not defined")
-        return self.object_list.add_network(name, comment, programming_language)
+        if order is None:
+            order = len(self.object_list.networks[group])
+        return self.object_list.add_network(name, comment, group, order, programming_language)
+
+    def add_network_group(self, name: str, comment: str, order: Optional[int] = None, programming_language: Optional[ProgrammingLanguage] = None) -> None:
+        programming_language = programming_language if programming_language is not None else self.programming_language
+        if programming_language is None:
+            raise ValueError("Programming language is not defined")
+        if order is None:
+            order = len(self.object_list.network_groups)
+        self.object_list.add_network_group(name, comment, order, programming_language)
+
+    def get_network(self, name: str) -> CompileUnit:
+        for group in self.object_list.networks.values():
+            for network in group.values():
+                if network.name == name:
+                    return network
+        raise ValueError(f"Network {name} not found")
+
+    @property
+    def network_groups(self) -> list[str]:
+        return list(self.object_list.network_groups.keys())
+
+    @network_groups.setter
+    def network_groups(self, network_groups: list[str]) -> None:
+        raise AttributeError("Network groups cannot be set")
 
     @property
     def author(self) -> str:
@@ -289,3 +368,62 @@ class FB(Basis, Block):
     @name.setter
     def name(self, name: str) -> None:
         self.attribute_list.name = name
+
+    @property
+    def inputs(self) -> list[Member]:
+        return self.attribute_list.interface.sections.input.members
+
+    @inputs.setter
+    def inputs(self, inputs: list[Member]) -> None:
+        raise AttributeError("Inputs cannot be set")
+
+    @property
+    def outputs(self) -> list[Member]:
+        return self.attribute_list.interface.sections.output.members
+
+    @outputs.setter
+    def outputs(self, outputs: list[Member]) -> None:
+        raise AttributeError("Outputs cannot be set")
+
+    @property
+    def in_outs(self) -> list[Member]:
+        return self.attribute_list.interface.sections.in_out.members
+
+    @in_outs.setter
+    def in_outs(self, in_outs: list[Member]) -> None:
+        raise AttributeError("In outs cannot be set")
+
+    @property
+    def temps(self) -> list[Member]:
+        return self.attribute_list.interface.sections.temp.members
+
+    @temps.setter
+    def temps(self, temps: list[Member]) -> None:
+        raise AttributeError("Temps cannot be set")
+
+    @property
+    def constants(self) -> list[Member]:
+        return self.attribute_list.interface.sections.constant.members
+
+    @constants.setter
+    def constants(self, constants: list[Member]) -> None:
+        raise AttributeError("Constants cannot be set")
+
+    @property
+    def statics(self) -> list[Member]:
+        return self.attribute_list.interface.sections.static.members
+
+    @statics.setter
+    def statics(self, statics: list[Member]) -> None:
+        raise AttributeError("Statics cannot be set")
+
+    @property
+    def networks(self) -> list[CompileUnit]:
+        networks: list[CompileUnit] = []
+        for group in self.object_list.networks.values():
+            networks.extend(group.values())
+        return networks
+
+    @networks.setter
+    def networks(self, networks: list[CompileUnit]) -> None:
+        raise AttributeError("Networks cannot be set")

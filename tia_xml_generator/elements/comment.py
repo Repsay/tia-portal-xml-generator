@@ -1,9 +1,9 @@
-from tia_xml_generator.elements.basis import Basis
+from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
 
 from tia_xml_generator.elements.multi_language_text import MultiLanguageText
 
-class Comment(Basis):
+class Comment(XMLBase):
     element_name = "Comment"
 
     def __init__(self, comment: str, language: str = "en-US"):

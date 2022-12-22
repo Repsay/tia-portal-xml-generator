@@ -1,7 +1,7 @@
-from tia_xml_generator.elements.basis import Basis
+from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
 
-class MultiLanguageText(Basis):
+class MultiLanguageText(XMLBase):
     element_name = "MultiLanguageText"
 
     def __init__(self, text: str, language: str = "en-US"):

@@ -1,10 +1,10 @@
-from tia_xml_generator.elements.basis import Basis
+from tia_xml_generator.elements.basis import XMLBase
 
 import xml.etree.ElementTree as ET
 
 from tia_xml_generator.elements.section import Section
 
-class InterfaceSections(Basis):
+class InterfaceSections(XMLBase):
     element_name = "Sections"
 
     def __init__(self):
@@ -21,7 +21,7 @@ class InterfaceSections(Basis):
         self.add([self.input, self.output, self.in_out, self.static, self.temp, self.constant])
 
 
-class Interface(Basis):
+class Interface(XMLBase):
     element_name = "Interface"
 
     def __init__(self):

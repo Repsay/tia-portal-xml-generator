@@ -1,0 +1,1 @@
+{"MOVE": {"None": {"inputs": ["en", "in"], "outputs": ["out"], "multiple_outputs": true}}, "GetBlockName": {"1.1": {"inputs": ["en", "size"], "outputs": ["Ret_Val"], "multiple_outputs": false}}, "RCoil": {"None": {"inputs": ["in", "operand"], "outputs": ["out"], "multiple_outputs": false}}}

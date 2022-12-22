@@ -1,53 +1,119 @@
 import os
-from tia_xml_generator.elements.basis import Basis
+from typing import Any, Optional
+from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
-import pandas as pd
 import json
+from tia_xml_generator.elements.parts.call import Call
 
-class Parts(Basis):
+from tia_xml_generator.elements.parts.part import Part
+
+class Parts(XMLBase):
     element_name = "Parts"
-    path = "data/parts.xlsx"
-    part_path = "data/parts"
+    path = "data/parts.json"
 
     def __init__(self):
         super().__init__()
         self.element = ET.Element(self.element_name)
         self.part_id = 21
+        self.part_options: dict[str, Any] = {}
 
         if not os.path.exists(self.path):
             os.makedirs(os.path.join(os.path.dirname(self.path), "parts"), exist_ok=True)
-            df = pd.DataFrame(columns=["Name", "Version"])
-            df.to_excel(self.path, index=False) # type: ignore
-
-        self.part_options: pd.DataFrame = pd.read_excel(self.path) # type: ignore
+            with open(self.path, "w") as f:
+                f.write(json.dumps({}))
 
 
+        with open(self.path, "r") as f:
+            self.part_options = json.load(f)
 
-    def add_part(self, name: str, version: str):
-        self.part_id += 1
-        if not self.part_options.loc[(self.part_options["Name"] == name) & (self.part_options["Version"] == version)].empty:
-            # part = Part(name, version, self.part_id)
-            # self.add(part)
-            pass
+    def add_part(self, name: str, version: Optional[str] = None) -> Part:
+        part_not_found = False
+        if version is None:
+            if not self.part_options.get(name, None) is None:
+                part = Part(name, version, self.part_id)
+                self.add(part)
+                self.part_id += 1
+                return part
+            else:
+                part_not_found = True
         else:
-            self.part_options: pd.DataFrame = self.part_options.append({"Name": name, "Version": version}, ignore_index=True) # type: ignore
-            print("Part is not defined")
-            information = {"inputs": [], "outputs": []}
+            if not self.part_options.get(name, {}).get(version, None) is None:
+                part = Part(name, version, self.part_id)
+                self.add(part)
+                self.part_id += 1
+                return part
+            else:
+                part_not_found = True
+
+        if part_not_found:
+            print(f"Part '{name}' is not defined")
+            information: dict[str, Any] = {"inputs": [], "outputs": []}
+
             while True:
-                new_input = input("Give the name of the input:")
+                new_input = input("Give the name of the input (send q to exit): ")
                 if new_input == "q":
                     break
                 information["inputs"].append(new_input.strip())
 
+            multiple_out = input("Is it possible to add more outputs (y/n): ")
+            if multiple_out == "y":
+                information["multiple_outputs"] = True
+            else:
+                information["multiple_outputs"] = False
+
             while True:
-                new_output = input("Give the name of the output:")
+                new_output = input("Give the name of the output (send q to exit): ")
                 if new_output == "q":
                     break
                 information["outputs"].append(new_output.strip())
 
-            part_file = os.path.join(self.part_path, f"{name}_{version}.json")
+            if not self.part_options.get(name, None) is None:
+                if version is None:
+                    self.part_options[name]["None"] = information
+                else:
+                    self.part_options[name][version] = information
+            else:
+                if version is None:
+                    self.part_options[name] = {"None": information}
+                else:
+                    self.part_options[name] = {version: information}
 
-            with open(part_file, "w") as f:
-                f.write(json.dumps(information))
 
-            raise ValueError("Part does not exist in the excel file")
+            with open(self.path, "w") as f:
+                f.write(json.dumps(self.part_options))
+
+            part = Part(name, version, self.part_id)
+            self.add(part)
+
+            self.part_id += 1
+            return part
+        else:
+            raise Exception("Something went wrong, very wrong")
+
+    def get_part(self, name: str) -> Optional[list[Part]]:
+        temp: list[Part] = []
+        for child in self.children:
+            if isinstance(child, Part):
+                if child.name == name:
+                    temp.append(child)
+        if len(temp) == 0:
+            return None
+        else:
+            return temp
+
+    def add_call(self, name: str, block_type: str):
+        call = Call(self.part_id, name, block_type)
+        self.add(call)
+        self.part_id += 1
+        return call
+
+    def get_call(self, name: str) -> Optional[list[Call]]:
+        temp: list[Call] = []
+        for child in self.children:
+            if isinstance(child, Call):
+                if child.name == name:
+                    temp.append(child)
+        if len(temp) == 0:
+            return None
+        else:
+            return temp

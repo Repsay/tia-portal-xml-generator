@@ -1,9 +1,12 @@
-from typing import Optional
+from typing import Optional, Union
 from tia_xml_generator.elements.attribute_list import AttributeList
-from tia_xml_generator.elements.basis import Basis
+from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
 from tia_xml_generator.elements.multilingual_text import MultilingualText
 from tia_xml_generator.elements.network_source import NetworkSource
+from tia_xml_generator.elements.parts.call import Call
+from tia_xml_generator.elements.parts.part import Part
+from tia_xml_generator.elements.wire import Wire
 
 from tia_xml_generator.enums import ProgrammingLanguage
 from tia_xml_generator.elements.object_list import ObjectList
@@ -35,12 +38,12 @@ class ObjectListCompileUnit(ObjectList):
         self.__title.add_text(name)
         self.__comment.add_text(description)
 
-class CompileUnit(Basis):
+class CompileUnit(XMLBase):
     element_name = "SW.Blocks.CompileUnit"
 
     def __init__(self, title: str, programming_language: ProgrammingLanguage, comment: str = ""):
         super().__init__()
-
+        self.name = title
         self.element = ET.Element(self.element_name, {"ID": self.global_id.next(), "CompositionName": "CompileUnits"})
 
         self.load_attribute_list()
@@ -60,8 +63,23 @@ class CompileUnit(Basis):
         self.object_list = ObjectListCompileUnit(title, comment)
         self.add(self.object_list)
 
-    def add_part(self, name: str, version: str):
-        self.network_source.add_part(name, version)
+    def add_part(self, name: str, version: Optional[str] = None) -> Part:
+        return self.network_source.add_part(name, version)
+
+    def add_call(self, name: str, block_type: str) -> Call:
+        return self.network_source.add_call(name, block_type)
+
+    def add_wire(self, type: str, source: Optional[int], target: Optional[str]):
+        return self.network_source.add_wire(type, source, target)
+
+    def get_part(self, name: str) -> Optional[list[Part]]:
+        return self.network_source.get_part(name)
+
+    def get_call(self, name: str) -> Optional[list[Call]]:
+        return self.network_source.get_call(name)
+
+    def get_wires(self, element: Union[Part, Call]) -> Optional[list[Wire]]:
+        return self.network_source.get_wires(element)
 
     @property
     def programming_language(self) -> Optional[ProgrammingLanguage]:
