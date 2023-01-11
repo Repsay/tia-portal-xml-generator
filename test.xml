@@ -1,8 +1,9 @@
 <?xml version='1.0' encoding='utf-8'?>
-<Document>
+<Document xsi:noNamespaceSchemaLocation="../tia-portal-schemas/workspace/document.xsd"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     <DocumentInfo>
         <Created>2022-12-22T16:57:00.909335Z</Created>
-        <ExportSettings>None</ExportSettings>
+        <ExportSetting>None</ExportSetting>
     </DocumentInfo>
     <SW.Blocks.FB ID="0">
         <AttributeList>
@@ -16,7 +17,7 @@
                 <Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v3">
                     <Section Name="Input">
                         <Member Name="Mode Settings" Datatype="BOOL">
-                            <AttributeList>
+                            <AttributeList xmlns="">
                                 <BooleanAttribute Name="ExternalAccessible" SytemDefined="true">false</BooleanAttribute>
                                 <BooleanAttribute Name="ExternalVisible" SytemDefined="true">false</BooleanAttribute>
                                 <BooleanAttribute Name="ExternalWritable" SytemDefined="true">false</BooleanAttribute>

@@ -4,5 +4,8 @@
     ],
     "python.analysis.include": [
         "C:\\Users\\LTD475\\Documents\\GitHub\\tia-portal-xml-generator\\**"
-    ]
+    ],
+    "python.linting.mypyEnabled": false,
+    "python.linting.pylintEnabled": true,
+    "python.linting.enabled": true
 }

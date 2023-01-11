@@ -5,9 +5,9 @@ import xml.etree.ElementTree as ET
 from tia_xml_generator.elements.comment import Comment
 
 class AttributeListMember(AttributeList):
-    __external_accessible = ET.Element("BooleanAttribute", {"Name": "ExternalAccessible", "SytemDefined": "true"})
-    __external_visible = ET.Element("BooleanAttribute", {"Name": "ExternalVisible", "SytemDefined": "true"})
-    __external_writable = ET.Element("BooleanAttribute", {"Name": "ExternalWritable", "SytemDefined": "true"})
+    __external_accessible = ET.Element("BooleanAttribute", {"Name": "ExternalAccessible", "SystemDefined": "true"})
+    __external_visible = ET.Element("BooleanAttribute", {"Name": "ExternalVisible", "SystemDefined": "true"})
+    __external_writable = ET.Element("BooleanAttribute", {"Name": "ExternalWritable", "SystemDefined": "true"})
 
     def __init__(self, external_accessible: bool = False, external_visible: bool = False, external_writable: bool = False):
         super().__init__()
