@@ -45,6 +45,7 @@ class CompileUnit(XMLBase):
         super().__init__()
         self.name = title
         self.element = ET.Element(self.element_name, {"ID": self.global_id.next(), "CompositionName": "CompileUnits"})
+        self.description = comment
 
         self.load_attribute_list()
         self.programming_language = programming_language

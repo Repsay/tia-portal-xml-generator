@@ -4,12 +4,15 @@ import xml.etree.ElementTree as ET
 
 from tia_xml_generator.elements.comment import Comment
 
+
 class AttributeListMember(AttributeList):
     __external_accessible = ET.Element("BooleanAttribute", {"Name": "ExternalAccessible", "SystemDefined": "true"})
     __external_visible = ET.Element("BooleanAttribute", {"Name": "ExternalVisible", "SystemDefined": "true"})
     __external_writable = ET.Element("BooleanAttribute", {"Name": "ExternalWritable", "SystemDefined": "true"})
 
-    def __init__(self, external_accessible: bool = False, external_visible: bool = False, external_writable: bool = False):
+    def __init__(
+        self, external_accessible: bool = False, external_visible: bool = False, external_writable: bool = False
+    ):
         super().__init__()
         self.element.extend([self.__external_accessible, self.__external_visible, self.__external_writable])
         self.external_accessible = external_accessible
@@ -46,16 +49,17 @@ class AttributeListMember(AttributeList):
     def external_writable(self, external_writable: bool) -> None:
         self.__external_writable.text = "true" if external_writable else "false"
 
+
 class Member(XMLBase):
     element_name = "Member"
 
     __comment = None
 
-    def __init__(self, name: str, type: str):
+    def __init__(self, name: str, data_type: str):
         super().__init__()
         self.name = name
-        self.type = type
-        self.element = ET.Element(self.element_name, {"Name": name, "Datatype": type})
+        self.data_type = data_type
+        self.element = ET.Element(self.element_name, {"Name": name, "Datatype": data_type})
         self.load_attribute_list()
 
     def load_attribute_list(self) -> None:

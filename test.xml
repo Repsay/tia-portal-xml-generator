@@ -1,13 +1,12 @@
 <?xml version='1.0' encoding='utf-8'?>
-<Document xsi:noNamespaceSchemaLocation="../tia-portal-schemas/workspace/document.xsd"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<Document>
     <DocumentInfo>
-        <Created>2022-12-22T16:57:00.909335Z</Created>
-        <ExportSetting>None</ExportSetting>
+        <Created>2023-01-13T12:46:56.272824Z</Created>
+        <ExportSettings>None</ExportSettings>
     </DocumentInfo>
     <SW.Blocks.FB ID="0">
         <AttributeList>
-            <Name>DAF_EM_template</Name>
+            <Name>__NAME__</Name>
             <ProgrammingLanguage>FBD</ProgrammingLanguage>
             <AutoNumber>true</AutoNumber>
             <HeaderAuthor>Jasper</HeaderAuthor>
@@ -17,55 +16,55 @@
                 <Sections xmlns="http://www.siemens.com/automation/Openness/SW/Interface/v3">
                     <Section Name="Input">
                         <Member Name="Mode Settings" Datatype="BOOL">
-                            <AttributeList xmlns="">
-                                <BooleanAttribute Name="ExternalAccessible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalVisible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalWritable" SytemDefined="true">false</BooleanAttribute>
+                            <AttributeList>
+                                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
                             </AttributeList>
                         </Member>
                     </Section>
                     <Section Name="Output">
                         <Member Name="Mode FB" Datatype="BOOL">
                             <AttributeList>
-                                <BooleanAttribute Name="ExternalAccessible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalVisible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalWritable" SytemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
                             </AttributeList>
                         </Member>
                     </Section>
                     <Section Name="InOut">
                         <Member Name="Type Lookup" Datatype="BOOL">
                             <AttributeList>
-                                <BooleanAttribute Name="ExternalAccessible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalVisible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalWritable" SytemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
                             </AttributeList>
                         </Member>
                     </Section>
                     <Section Name="Static">
                         <Member Name="End of Cycle Reached / End of Production" Datatype="BOOL">
                             <AttributeList>
-                                <BooleanAttribute Name="ExternalAccessible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalVisible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalWritable" SytemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
                             </AttributeList>
                         </Member>
                     </Section>
                     <Section Name="Temp">
                         <Member Name="Pause Command" Datatype="BOOL">
                             <AttributeList>
-                                <BooleanAttribute Name="ExternalAccessible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalVisible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalWritable" SytemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
                             </AttributeList>
                         </Member>
                     </Section>
                     <Section Name="Constant">
                         <Member Name="Reset" Datatype="BOOL">
                             <AttributeList>
-                                <BooleanAttribute Name="ExternalAccessible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalVisible" SytemDefined="true">false</BooleanAttribute>
-                                <BooleanAttribute Name="ExternalWritable" SytemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalAccessible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalVisible" SystemDefined="true">false</BooleanAttribute>
+                                <BooleanAttribute Name="ExternalWritable" SystemDefined="true">false</BooleanAttribute>
                             </AttributeList>
                         </Member>
                     </Section>
@@ -185,9 +184,6 @@
                         <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v3">
                             <Parts>
                                 <Part Name="GetBlockName" Version="1.1" UId="21" />
-                                <Call UId="28">
-                                    <CallInfo Name="Mode_EM_FB" BlockType="FB" />
-                                </Call>
                             </Parts>
                             <Wires>
                                 <Wire UId="22">
@@ -201,10 +197,6 @@
                                 <Wire UId="26">
                                     <NameCon UId="21" Name="Ret_Val" />
                                     <OpenCon UId="27" />
-                                </Wire>
-                                <Wire UId="29">
-                                    <NameCon UId="28" Name="en" />
-                                    <OpenCon UId="30" />
                                 </Wire>
                             </Wires>
                         </FlgNet>
@@ -262,21 +254,7 @@
             </SW.Blocks.CompileUnit>
             <SW.Blocks.CompileUnit ID="1E" CompositionName="CompileUnits">
                 <AttributeList>
-                    <NetworkSource>
-                        <FlgNet xmlns="http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v3">
-                            <Parts>
-                                <Call UId="21">
-                                    <CallInfo Name="Type_Lookup_FB" BlockType="FB" />
-                                </Call>
-                            </Parts>
-                            <Wires>
-                                <Wire UId="22">
-                                    <NameCon UId="21" Name="en" />
-                                    <OpenCon UId="23" />
-                                </Wire>
-                            </Wires>
-                        </FlgNet>
-                    </NetworkSource>
+                    <NetworkSource />
                 </AttributeList>
                 <ObjectList>
                     <MultilingualText ID="1F" CompositionName="Title">
@@ -439,7 +417,7 @@
                 <ObjectList>
                     <MultilingualTextItem ID="3" CompositionName="Items">
                         <AttributeList>
-                            <Text>DAF_EM_template</Text>
+                            <Text>__NAME__</Text>
                             <Culture>en-US</Culture>
                         </AttributeList>
                     </MultilingualTextItem>

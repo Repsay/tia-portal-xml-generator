@@ -7,6 +7,7 @@ from tia_xml_generator.enums import ProgrammingLanguage
 from tia_xml_generator.elements.basis import XMLBase
 from tia_xml_generator.elements.blocks.fb import FB
 
+
 class Document(XMLBase):
     element_name = "Document"
     template_path = "data/templates"
@@ -25,6 +26,11 @@ class Document(XMLBase):
         if not self.export_path is None:
             if not os.path.exists(self.export_path):
                 os.mkdir(self.export_path)
+
+    @property
+    def fbs(self) -> list[FB]:
+        """Returns all FBs in the document."""
+        return [child for child in self.children if isinstance(child, FB)]
 
     def load_document_info(self) -> None:
         """Loads the document info."""
@@ -64,10 +70,16 @@ class Document(XMLBase):
     @classmethod
     def load_template(cls, name: str) -> Self:
         """Loads a template."""
-        path = os.path.join(cls.template_path, f"{name}.pkl")
+        if not name.endswith(".pkl"):
+            name = f"{name}.pkl"
 
-        if not os.path.exists(path):
-            raise FileNotFoundError(f"The file '{path}' does not exist.")
+        if not os.path.isfile(name):
+            path = os.path.join(cls.template_path, name)
+
+            if not os.path.exists(path):
+                raise FileNotFoundError(f"The file '{path}' does not exist.")
+        else:
+            path = name
 
         with open(path, "rb") as f:
             return pickle.load(f)
@@ -102,7 +114,9 @@ class Document(XMLBase):
                 if fb_language is None:
                     raise ValueError("The FB does not have a programming language.")
                 fb_language = ProgrammingLanguage[fb_language]
-                fb_description = child.find("ObjectList/MultilingualText[@CompositionName='Comment']/ObjectList/MultilingualTextItem/AttributeList/Text")
+                fb_description = child.find(
+                    "ObjectList/MultilingualText[@CompositionName='Comment']/ObjectList/MultilingualTextItem/AttributeList/Text"
+                )
                 fb_description = fb_description.text if not fb_description is None else None
                 if fb_description is None:
                     fb_description = ""
@@ -126,13 +140,19 @@ class Document(XMLBase):
                     elif fb_attribute.tag == "HeaderFamily":
                         fb.family = fb_attribute.text if not fb_attribute.text is None else ""
                     elif fb_attribute.tag == "Interface":
-                        sections = fb_attribute.find("xmlns:Sections", {"xmlns":"http://www.siemens.com/automation/Openness/SW/Interface/v3" })
+                        sections = fb_attribute.find(
+                            "xmlns:Sections", {"xmlns": "http://www.siemens.com/automation/Openness/SW/Interface/v3"}
+                        )
 
                         if sections is None:
                             raise ValueError("The FB interface does not have any sections.")
 
-                        for section in sections.findall("xmlns:Section", {"xmlns":"http://www.siemens.com/automation/Openness/SW/Interface/v3" }):
-                            members = section.findall("xmlns:Member", {"xmlns":"http://www.siemens.com/automation/Openness/SW/Interface/v3" })
+                        for section in sections.findall(
+                            "xmlns:Section", {"xmlns": "http://www.siemens.com/automation/Openness/SW/Interface/v3"}
+                        ):
+                            members = section.findall(
+                                "xmlns:Member", {"xmlns": "http://www.siemens.com/automation/Openness/SW/Interface/v3"}
+                            )
                             for member in members:
                                 member_name = member.get("Name")
                                 member_type = member.get("Datatype")
@@ -167,7 +187,9 @@ class Document(XMLBase):
 
                 for fb_compile_unit in fb_compile_units:
                     is_group = False
-                    unit_name = fb_compile_unit.find("ObjectList/MultilingualText[@CompositionName='Title']/ObjectList/MultilingualTextItem/AttributeList/Text")
+                    unit_name = fb_compile_unit.find(
+                        "ObjectList/MultilingualText[@CompositionName='Title']/ObjectList/MultilingualTextItem/AttributeList/Text"
+                    )
                     unit_name = unit_name.text if not unit_name is None else None
                     if unit_name is None:
                         raise ValueError("The FB compile unit does not have a name.")
@@ -175,7 +197,9 @@ class Document(XMLBase):
                         is_group = True
                         unit_name = unit_name.replace("***", "")
 
-                    unit_description = fb_compile_unit.find("ObjectList/MultilingualText[@CompositionName='Comment']/ObjectList/MultilingualTextItem/AttributeList/Text")
+                    unit_description = fb_compile_unit.find(
+                        "ObjectList/MultilingualText[@CompositionName='Comment']/ObjectList/MultilingualTextItem/AttributeList/Text"
+                    )
 
                     unit_description = unit_description.text if not unit_description is None else ""
                     unit_description = unit_description if not unit_description is None else ""
@@ -193,7 +217,9 @@ class Document(XMLBase):
                     fb.add_network(network[0], network[1], group)
 
                 for fb_compile_unit in fb_compile_units:
-                    unit_name = fb_compile_unit.find("ObjectList/MultilingualText[@CompositionName='Title']/ObjectList/MultilingualTextItem/AttributeList/Text")
+                    unit_name = fb_compile_unit.find(
+                        "ObjectList/MultilingualText[@CompositionName='Title']/ObjectList/MultilingualTextItem/AttributeList/Text"
+                    )
                     unit_name = unit_name.text if not unit_name is None else None
                     if unit_name is None:
                         raise ValueError("The FB compile unit does not have a name.")
@@ -246,12 +272,14 @@ class Document(XMLBase):
 
                             network.add_call(call_name, call_block_type)
 
-
         return document
 
-
-    def save(self, file_name: str) -> None:
+    def save(self, file_name: str) -> str:
         """Saves the document."""
         tree = ET.ElementTree(self.build())
-        path = os.path.join(self.export_path, f"{file_name}.xml") if not self.export_path is None else f"{file_name}.xml"
+        path = (
+            os.path.join(self.export_path, f"{file_name}.xml") if not self.export_path is None else f"{file_name}.xml"
+        )
         tree.write(path, encoding="utf-8", xml_declaration=True)
+
+        return path

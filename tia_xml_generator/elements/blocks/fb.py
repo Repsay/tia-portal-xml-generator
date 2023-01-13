@@ -11,6 +11,7 @@ from tia_xml_generator.elements.interface import Interface
 from tia_xml_generator.elements.member import Member
 from tia_xml_generator.elements.object_list import ObjectList
 
+
 class AttributeListFB(AttributeList):
     def __init__(self):
         super().__init__()
@@ -23,6 +24,7 @@ class AttributeListFB(AttributeList):
         self.__memory_layout = ET.Element("MemoryLayout")
         self.__number = ET.Element("Number")
         self.__programming_language = ET.Element("ProgrammingLanguage")
+        # TODO: Add all attributes
         self.__assigned_prodiag_fb = ET.Element("AssignedProDiagFB")
         self.__supervisions = ET.Element("Supervisions")
         self.__is_iec_check_enabled = ET.Element("IsIECCheckEnabled")
@@ -154,6 +156,7 @@ class AttributeListFB(AttributeList):
         if self.element.find("Number") is None and self.auto_number is False:
             self.element.append(self.__number)
 
+
 class ObjectListFB(ObjectList):
 
     network_groups: dict[str, int]
@@ -173,7 +176,9 @@ class ObjectListFB(ObjectList):
         self.__title.add_text(name)
         self.__comment.add_text(description)
 
-    def add_network(self, name: str, comment: str, group: str, order: int, programming_language: ProgrammingLanguage) -> CompileUnit:
+    def add_network(
+        self, name: str, comment: str, group: str, order: int, programming_language: ProgrammingLanguage
+    ) -> CompileUnit:
         if group not in self.network_groups:
             raise ValueError(f"Group {group} not found")
         if group not in self.networks:
@@ -207,6 +212,7 @@ class ObjectListFB(ObjectList):
         self.element.extend([self.__title.build(), self.__comment.build()])
 
         return self.element
+
 
 class FB(XMLBase, Block):
     element_name = "SW.Blocks.FB"
@@ -266,7 +272,14 @@ class FB(XMLBase, Block):
     def get_static(self, name: str) -> Optional[Member]:
         return self.attribute_list.interface.sections.static.get_member(name)
 
-    def add_network(self, name: str, comment: str, group: str, order: Optional[int] = None, programming_language: Optional[ProgrammingLanguage] = None) -> CompileUnit:
+    def add_network(
+        self,
+        name: str,
+        comment: str,
+        group: str,
+        order: Optional[int] = None,
+        programming_language: Optional[ProgrammingLanguage] = None,
+    ) -> CompileUnit:
         programming_language = programming_language if programming_language is not None else self.programming_language
         if programming_language is None:
             raise ValueError("Programming language is not defined")
@@ -274,7 +287,13 @@ class FB(XMLBase, Block):
             order = len(self.object_list.networks[group])
         return self.object_list.add_network(name, comment, group, order, programming_language)
 
-    def add_network_group(self, name: str, comment: str, order: Optional[int] = None, programming_language: Optional[ProgrammingLanguage] = None) -> None:
+    def add_network_group(
+        self,
+        name: str,
+        comment: str,
+        order: Optional[int] = None,
+        programming_language: Optional[ProgrammingLanguage] = None,
+    ) -> None:
         programming_language = programming_language if programming_language is not None else self.programming_language
         if programming_language is None:
             raise ValueError("Programming language is not defined")
@@ -288,6 +307,11 @@ class FB(XMLBase, Block):
                 if network.name == name:
                     return network
         raise ValueError(f"Network {name} not found")
+
+    def get_networks_in_group(self, group: str) -> list[CompileUnit]:
+        if group not in self.object_list.network_groups:
+            raise ValueError(f"Network group {group} not found")
+        return list(self.object_list.networks[group].values())
 
     @property
     def network_groups(self) -> list[str]:
