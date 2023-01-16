@@ -1,50 +1,64 @@
-from tia_xml_generator.enums import ProgrammingLanguage
+from tia_xml_generator.enums import ProgrammingLanguage, MemoryLayout
 from tia_xml_generator.elements import document
 
 doc = document.Document()
-fb = doc.add_fb("__NAME__", ProgrammingLanguage.FBD, "The block is used to control EM{} and all its associated CMs.")
+# fb = doc.add_fb("__NAME__", ProgrammingLanguage.FBD, "The block is used to control EM{} and all its associated CMs.")
 
-fb.add_input("Mode Settings", "BOOL")
-fb.add_output("Mode FB", "BOOL")
-fb.add_in_out("Type Lookup", "BOOL")
-fb.add_temp("Pause Command", "BOOL")
-fb.add_static("End of Cycle Reached / End of Production", "BOOL")
-fb.add_constant("Reset", "BOOL")
+# fb.add_input("Mode Settings", "BOOL")
+# fb.add_output("Mode FB", "BOOL")
+# fb.add_in_out("Type Lookup", "BOOL")
+# fb.add_temp("Pause Command", "BOOL")
+# fb.add_static("End of Cycle Reached / End of Production", "BOOL")
+# fb.add_constant("Reset", "BOOL")
 
-fb.author = "Jasper"
-fb.family = "DAF"
-fb.version = "1.0"
+# fb.author = "Jasper"
+# fb.family = "DAF"
+# fb.version = "1.0"
 
-fb.add_network_group("Mode", "")
-fb.add_network_group("TYPE", "")
-fb.add_network_group("Process status", "")
+# fb.add_network_group("Mode", "")
+# fb.add_network_group("TYPE", "")
+# fb.add_network_group("Process status", "")
 
-mode_settings = fb.add_network("Mode Settings", "Setting holding to held", "Mode")
-mode_fb = fb.add_network(
-    "Mode FB",
-    "Depending on the inputs preconditions, commands, alarms, HMI and input from Safety Area (SA) Determine the current function, mode of operandi, and state.",
-    "Mode",
-)
+# mode_settings = fb.add_network("Mode Settings", "Setting holding to held", "Mode")
+# mode_fb = fb.add_network(
+#     "Mode FB",
+#     "Depending on the inputs preconditions, commands, alarms, HMI and input from Safety Area (SA) Determine the current function, mode of operandi, and state.",
+#     "Mode",
+# )
 
-type_lookup = fb.add_network("Type Lookup", "Lookup the type of the block", "TYPE")
+# type_lookup = fb.add_network("Type Lookup", "Lookup the type of the block", "TYPE")
+# pause_command = fb.add_network("Pause Command", "Pause command received", "Process status")
+# end_of_cycle = fb.add_network("End of Cycle Reached / End of Production", "No Phase Active", "Process status", 1)
 
-pause_command = fb.add_network("Pause Command", "Pause command received", "Process status")
-end_of_cycle = fb.add_network("End of Cycle Reached / End of Production", "No Phase Active", "Process status", 1)
 
+# move_1 = mode_settings.add_part("MOVE")
+# move_2 = mode_settings.add_part("MOVE")
+# move_3 = mode_settings.add_part("MOVE")
 
-move_1 = mode_settings.add_part("MOVE")
-move_2 = mode_settings.add_part("MOVE")
-move_3 = mode_settings.add_part("MOVE")
+# mode_fb.add_part("GetBlockName", "1.1")
 
-mode_fb.add_part("GetBlockName", "1.1")
+# reset_1 = end_of_cycle.add_part("RCoil")
+# reset_2 = end_of_cycle.add_part("RCoil")
 
-reset_1 = end_of_cycle.add_part("RCoil")
-reset_2 = end_of_cycle.add_part("RCoil")
+# pause_command.add_part("RCoil")
 
-pause_command.add_part("RCoil")
+# doc.save_template("DAF_EM_template", True)
+# doc.save("test3")
+# doc.save_no_call("test5")
 
-doc.save_template("DAF_EM_template", True)
-doc.save("test")
+db = doc.add_db("__NAME__")
+db.add_static("Mode Settings", "BOOL")
+db.add_static("Mode FB", "BOOL")
+db.add_static("Type Lookup", "BOOL")
+db.add_static("Pause Command", "BOOL")
+db.author = "Jasper"
+db.family = "DAF"
+db.version = "1.0"
+db.memory_layout = MemoryLayout.Standard.name
+
+doc.save("test6")
+doc.save_template("DAF_DB_template", True)
+
 
 # doc = document.Document.load_template("DAF_EM_template")
 # fb = doc.get_fb("DAF_EM_template")

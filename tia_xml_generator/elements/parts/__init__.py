@@ -1,3 +1,4 @@
+from copy import deepcopy
 import os
 from typing import Any, Optional
 from tia_xml_generator.elements.basis import XMLBase
@@ -6,6 +7,7 @@ import json
 from tia_xml_generator.elements.parts.call import Call
 
 from tia_xml_generator.elements.parts.part import Part
+
 
 class Parts(XMLBase):
     element_name = "Parts"
@@ -21,7 +23,6 @@ class Parts(XMLBase):
             os.makedirs(os.path.join(os.path.dirname(self.path), "parts"), exist_ok=True)
             with open(self.path, "w") as f:
                 f.write(json.dumps({}))
-
 
         with open(self.path, "r") as f:
             self.part_options = json.load(f)
@@ -78,7 +79,6 @@ class Parts(XMLBase):
                 else:
                     self.part_options[name] = {version: information}
 
-
             with open(self.path, "w") as f:
                 f.write(json.dumps(self.part_options))
 
@@ -117,3 +117,8 @@ class Parts(XMLBase):
             return None
         else:
             return temp
+
+    def build_no_call(self) -> ET.Element:
+        self_ = deepcopy(self)
+        self_.element.extend([child.build_no_call() for child in self.children if not isinstance(child, Call)])
+        return self_.element

@@ -1,8 +1,10 @@
 from typing import Optional
 from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
+from copy import deepcopy
 
 from tia_xml_generator.elements.member import Member
+
 
 class Section(XMLBase):
     element_name = "Section"
@@ -28,7 +30,17 @@ class Section(XMLBase):
         return None
 
     def build(self) -> ET.Element:
-        for member in self.members:
-            self.add(member)
+        self_ = deepcopy(self)
+        for member in self_.members:
+            self_.add(member)
 
-        return super().build()
+        self_.element.extend([child.build() for child in self_.children])
+        return self_.element
+
+    def build_no_call(self) -> ET.Element:
+        self_ = deepcopy(self)
+        for member in self_.members:
+            self_.add(member)
+
+        self_.element.extend([child.build_no_call() for child in self_.children])
+        return self_.element

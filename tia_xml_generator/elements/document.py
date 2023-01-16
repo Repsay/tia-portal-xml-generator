@@ -6,16 +6,18 @@ import xml.etree.ElementTree as ET
 from tia_xml_generator.enums import ProgrammingLanguage
 from tia_xml_generator.elements.basis import XMLBase
 from tia_xml_generator.elements.blocks.fb import FB
+from tia_xml_generator.elements.blocks.db import DB
 
 
 class Document(XMLBase):
     element_name = "Document"
     template_path = "data/templates"
+    export_path = "data/export"
 
     def __init__(self, export_path: Optional[str] = None, template_path: Optional[str] = None) -> None:
         super().__init__()
         self.id = None
-        self.export_path = export_path
+        self.export_path = export_path or self.export_path
         self.template_path = template_path or self.template_path
         self.element = ET.Element(self.element_name)
         self.load_document_info()
@@ -31,6 +33,11 @@ class Document(XMLBase):
     def fbs(self) -> list[FB]:
         """Returns all FBs in the document."""
         return [child for child in self.children if isinstance(child, FB)]
+
+    @property
+    def dbs(self) -> list[DB]:
+        """Returns all DBs in the document."""
+        return [child for child in self.children if isinstance(child, DB)]
 
     def load_document_info(self) -> None:
         """Loads the document info."""
@@ -57,6 +64,21 @@ class Document(XMLBase):
 
         raise ValueError(f"The FB '{name}' does not exist in the document.")
 
+    def add_db(self, name: str) -> DB:
+        """Adds a DB to the document."""
+        db = DB(name)
+        self.add(db)
+        return db
+
+    def get_db(self, name: str) -> DB:
+        """Returns a DB from the document."""
+        for child in self.children:
+            if isinstance(child, DB):
+                if child.name == name:
+                    return child
+
+        raise ValueError(f"The DB '{name}' does not exist in the document.")
+
     def save_template(self, name: str, overwrite: bool = False) -> None:
         """Saves the document as a template."""
         path = os.path.join(self.template_path, f"{name}.pkl")
@@ -82,7 +104,16 @@ class Document(XMLBase):
             path = name
 
         with open(path, "rb") as f:
-            return pickle.load(f)
+            doc: Self = pickle.load(f)
+
+            if not os.path.exists(doc.template_path):
+                os.mkdir(doc.template_path)
+
+            if not doc.export_path is None:
+                if not os.path.exists(doc.export_path):
+                    os.mkdir(doc.export_path)
+
+            return doc
 
     @classmethod
     def load_from_file(cls, path: str) -> Self:
@@ -280,6 +311,22 @@ class Document(XMLBase):
         path = (
             os.path.join(self.export_path, f"{file_name}.xml") if not self.export_path is None else f"{file_name}.xml"
         )
+        if os.path.isfile(path):
+            os.remove(path)
+        tree.write(path, encoding="utf-8", xml_declaration=True)
+
+        return path
+
+    def save_no_call(self, file_name: str) -> str:
+        """Saves the document without the calls."""
+        tree = ET.ElementTree(self.build_no_call())
+        path = (
+            os.path.join(self.export_path, f"{file_name}_no_call.xml")
+            if not self.export_path is None
+            else f"{file_name}_no_call.xml"
+        )
+        if os.path.isfile(path):
+            os.remove(path)
         tree.write(path, encoding="utf-8", xml_declaration=True)
 
         return path

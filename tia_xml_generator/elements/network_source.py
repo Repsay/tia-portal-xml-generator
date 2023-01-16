@@ -1,11 +1,13 @@
 from typing import Optional, Union
 from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
+from copy import deepcopy
 
 from tia_xml_generator.elements.flg_net import FlgNet
 from tia_xml_generator.elements.parts.call import Call
 from tia_xml_generator.elements.parts.part import Part
 from tia_xml_generator.elements.wire import Wire
+
 
 class NetworkSource(XMLBase):
     element_name = "NetworkSource"
@@ -21,10 +23,20 @@ class NetworkSource(XMLBase):
         self.add(self.flg_net)
 
     def build(self) -> ET.Element:
-        self.flg_net.check_children()
-        if len(self.flg_net.children) == 0:
-            self.remove(self.flg_net)
-        return super().build()
+        self_ = deepcopy(self)
+        self_.flg_net.check_children()
+        if len(self_.flg_net.children) == 0:
+            self_.remove(self_.flg_net)
+        self_.element.extend([child.build() for child in self_.children])
+        return self_.element
+
+    def build_no_call(self) -> ET.Element:
+        self_ = deepcopy(self)
+        self_.flg_net.check_children_no_call()
+        if len(self_.flg_net.children) == 0:
+            self_.remove(self_.flg_net)
+        self_.element.extend([child.build_no_call() for child in self_.children])
+        return self_.element
 
     def add_part(self, name: str, version: Optional[str]) -> Part:
         return self.flg_net.add_part(name, version)

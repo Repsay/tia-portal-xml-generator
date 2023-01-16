@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Optional, Union
 from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
@@ -8,12 +9,15 @@ from tia_xml_generator.elements.parts.part import Part
 from tia_xml_generator.elements.wire import Wire
 from tia_xml_generator.elements.wires import Wires
 
+
 class FlgNet(XMLBase):
     element_name = "FlgNet"
 
     def __init__(self):
         super().__init__()
-        self.element = ET.Element(self.element_name, {"xmlns": "http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v3"})
+        self.element = ET.Element(
+            self.element_name, {"xmlns": "http://www.siemens.com/automation/Openness/SW/NetworkSource/FlgNet/v3"}
+        )
 
         self.load_parts()
         self.load_wires()
@@ -34,9 +38,32 @@ class FlgNet(XMLBase):
             if self.children.count(self.wires) == 1:
                 self.remove(self.wires)
 
+    def check_children_no_call(self) -> None:
+        for child in self.parts.children:
+            if isinstance(child, Call):
+                wires = self.wires.get_wires(child)
+                for wire in wires:
+                    self.wires.remove(wire)
+                self.parts.remove(child)
+
+        if len(self.parts.children) == 0:
+            if self.children.count(self.parts) == 1:
+                self.remove(self.parts)
+        if len(self.wires.children) == 0:
+            if self.children.count(self.wires) == 1:
+                self.remove(self.wires)
+
     def build(self) -> ET.Element:
-        self.check_children()
-        return super().build()
+        self_ = deepcopy(self)
+        self_.check_children()
+        self_.element.extend([child.build() for child in self_.children])
+        return self_.element
+
+    def build_no_call(self) -> ET.Element:
+        self_ = deepcopy(self)
+        self_.check_children_no_call()
+        self_.element.extend([child.build_no_call() for child in self_.children])
+        return self_.element
 
     def add_part(self, name: str, version: Optional[str]) -> Part:
         if self.parts.part_id < self.wires.wire_id:

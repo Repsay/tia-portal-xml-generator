@@ -2,6 +2,7 @@ from typing import Optional
 from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
 
+
 class Connection(XMLBase):
     def __init__(self, type: str, source: Optional[int], target: Optional[str]):
         super().__init__()
@@ -14,6 +15,7 @@ class Connection(XMLBase):
 
         if target is not None:
             self.element.set("Name", target)
+
 
 class Wire(XMLBase):
     element_name = "Wire"
@@ -45,7 +47,3 @@ class Wire(XMLBase):
             for i, connection in enumerate(connections):
                 text += f"{i}: {connection.source} -> {connection.target}\n"
             return text
-
-
-    def build(self) -> ET.Element:
-        return super().build()

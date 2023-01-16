@@ -1,8 +1,11 @@
 from typing import Any, Optional, Protocol, Self, Union
 import xml.etree.ElementTree as ET
+from copy import deepcopy
+
 
 class ID:
     """Global ID class."""
+
     id: int
 
     def __init__(self) -> None:
@@ -39,9 +42,14 @@ class XMLElement(Protocol):
         """Builds the XML element."""
         ...
 
+    def build_no_call(self) -> ET.Element:
+        """Builds the XML element without the call."""
+        ...
+
 
 class XMLBase(XMLElement):
     """Protocol for all basis classes."""
+
     element_name: str
     """The name of the XML element."""
     element: ET.Element
@@ -57,8 +65,15 @@ class XMLBase(XMLElement):
 
     def build(self) -> ET.Element:
         """Builds the XML element."""
-        self.element.extend([child.build() for child in self.children])
-        return self.element
+        self_ = deepcopy(self)
+        self_.element.extend([child.build() for child in self_.children])
+        return self_.element
+
+    def build_no_call(self) -> ET.Element:
+        """Builds the XML element without the call."""
+        self_ = deepcopy(self)
+        self_.element.extend([child.build_no_call() for child in self_.children])
+        return self_.element
 
     def add(self, child: Union[list[XMLElement], XMLElement]) -> None:
         """Adds a child element to the XML element."""
