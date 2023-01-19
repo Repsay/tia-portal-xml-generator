@@ -42,8 +42,9 @@ class FlgNet(XMLBase):
         for child in self.parts.children:
             if isinstance(child, Call):
                 wires = self.wires.get_wires(child)
-                for wire in wires:
-                    self.wires.remove(wire)
+                if not wires is None:
+                    for wire in wires:
+                        self.wires.remove(wire)
                 self.parts.remove(child)
 
         if len(self.parts.children) == 0:
@@ -71,8 +72,8 @@ class FlgNet(XMLBase):
 
         part = self.parts.add_part(name, version)
 
-        for input in part.part_info["inputs"]:
-            wire = self.add_wire("NameCon", part.id, input)
+        for input_value in part.part_info["inputs"]:
+            wire = self.add_wire("NameCon", part.id, input_value)
             wire.add_connection("OpenCon", self.wires.get_wire_id())
 
         for output in part.part_info["outputs"]:
@@ -98,10 +99,10 @@ class FlgNet(XMLBase):
     def get_call(self, name: str) -> Optional[list[Call]]:
         return self.parts.get_call(name)
 
-    def add_wire(self, type: str, source: Optional[int], target: Optional[str]) -> Wire:
+    def add_wire(self, wire_type: str, source: Optional[int], target: Optional[str]) -> Wire:
         if self.wires.wire_id < self.parts.part_id:
             self.wires.wire_id = self.parts.part_id
-        return self.wires.add_wire(type, source, target)
+        return self.wires.add_wire(wire_type, source, target)
 
     def get_wires(self, element: Union[Part, Call]) -> Optional[list[Wire]]:
         return self.wires.get_wires(element)

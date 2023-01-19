@@ -1,4 +1,4 @@
-from tia_xml_generator.enums import ProgrammingLanguage, MemoryLayout
+from tia_xml_generator.enums import MemoryLayout
 from tia_xml_generator.elements import document
 
 doc = document.Document()

@@ -1,7 +1,7 @@
 from datetime import datetime
 import os
 import pickle
-from typing import Optional, Self
+from typing import Self
 import xml.etree.ElementTree as ET
 from tia_xml_generator.enums import ProgrammingLanguage
 from tia_xml_generator.elements.basis import XMLBase
@@ -11,14 +11,12 @@ from tia_xml_generator.elements.blocks.db import DB
 
 class Document(XMLBase):
     element_name = "Document"
-    template_path = "data/templates"
-    export_path = "data/export"
+    template_path = os.path.join(os.path.expanduser("~"), ".tia_portal", "templates")
+    export_path = os.path.join(os.path.expanduser("~"), ".tia_portal", "exports")
 
-    def __init__(self, export_path: Optional[str] = None, template_path: Optional[str] = None) -> None:
+    def __init__(self) -> None:
         super().__init__()
         self.id = None
-        self.export_path = export_path or self.export_path
-        self.template_path = template_path or self.template_path
         self.element = ET.Element(self.element_name)
         self.load_document_info()
 
