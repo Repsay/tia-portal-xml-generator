@@ -11,10 +11,10 @@ from tia_xml_generator.elements.parts.part import Part
 
 class Parts(XMLBase):
     element_name = "Parts"
-    path = "data/parts.json"
 
     def __init__(self):
         super().__init__()
+        self.path = os.path.join(self.home_path, "parts.json")
         self.element = ET.Element(self.element_name)
         self.part_id = 21
         self.part_options: dict[str, Any] = {}
@@ -101,8 +101,10 @@ class Parts(XMLBase):
         else:
             return temp
 
-    def add_call(self, name: str, block_type: str):
+    def add_call(self, name: str, block_type: str, instance_db_name: str) -> Call:
         call = Call(self.part_id, name, block_type)
+        self.part_id += 1
+        call.add_instance_db(self.part_id, instance_db_name)
         self.add(call)
         self.part_id += 1
         return call

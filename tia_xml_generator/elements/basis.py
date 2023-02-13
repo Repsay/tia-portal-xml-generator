@@ -1,3 +1,4 @@
+import os
 from typing import Any, Optional, Protocol, Self, Union
 import xml.etree.ElementTree as ET
 from copy import deepcopy
@@ -20,6 +21,12 @@ class ID:
         else:
             return hex(r_value).lstrip("0x").rstrip("L").upper()
 
+    def reset(self, value: Optional[int] = None):
+        if value is None:
+            self.id = 0
+        else:
+            self.id = value
+
 
 class XMLElement(Protocol):
     element_name: str
@@ -29,6 +36,13 @@ class XMLElement(Protocol):
     id: Optional[Any]
     """The ID of the XML element."""
     children: list[Self]
+
+    template_path: str
+    """The path to the templates."""
+    export_path: str
+    """The path to the exports."""
+    home_path: str
+    """The path to the home directory."""
 
     def add(self, child: Union[list[Self], Self]) -> None:
         """Adds a child element to the XML element."""
@@ -59,6 +73,12 @@ class XMLBase(XMLElement):
     id: Optional[Union[str, int]]
     """The ID of the XML element."""
     global_id: ID = ID()
+
+    template_path: str = os.path.join(os.path.expanduser("~"), ".tia_portal", "templates")
+    export_path: str = os.path.join(os.path.expanduser("~"), ".tia_portal", "exports")
+    import_path: str = os.path.join(os.path.expanduser("~"), ".tia_portal", "imports")
+    temp_path: str = os.path.join(os.path.expanduser("~"), ".tia_portal", "temp")
+    home_path: str = os.path.join(os.path.expanduser("~"), ".tia_portal")
 
     def __init__(self) -> None:
         self.children = []

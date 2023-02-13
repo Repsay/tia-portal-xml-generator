@@ -1,7 +1,9 @@
 import json
+import os
 from typing import Any, Optional
 from tia_xml_generator.elements.basis import XMLBase
 import xml.etree.ElementTree as ET
+
 
 class TemplateValue(XMLBase):
     element_name = "TemplateValue"
@@ -13,12 +15,13 @@ class TemplateValue(XMLBase):
         self.element.set("Type", type)
         self.element.text = str(value)
 
+
 class Part(XMLBase):
     element_name = "Part"
-    part_info_path = "data/parts.json"
 
     def __init__(self, name: str, version: Optional[str], id: int):
         super().__init__()
+        self.part_info_path = os.path.join(self.home_path, "parts.json")
         self.id: int = id
         self.name = name
         self.element = ET.Element(self.element_name)

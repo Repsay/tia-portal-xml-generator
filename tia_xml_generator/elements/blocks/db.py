@@ -84,6 +84,18 @@ class AttributeListDB(AttributeList):
             raise ValueError("Number must be set if auto_number is False")
 
     @property
+    def assigned_prodiag_fb(self) -> str:
+        if self.__assigned_prodiag_fb.text is None:
+            return ""
+        return self.__assigned_prodiag_fb.text
+
+    @assigned_prodiag_fb.setter
+    def assigned_prodiag_fb(self, assigned_prodiag_fb: str) -> None:
+        self.__assigned_prodiag_fb.text = assigned_prodiag_fb
+        if self.element.find("AssignedProDiagFB") is None:
+            self.element.append(self.__assigned_prodiag_fb)
+
+    @property
     def author(self) -> str:
         if self.__author.text is None:
             return ""
@@ -243,6 +255,14 @@ class DB(XMLBase, Block):
     @auto_number.setter
     def auto_number(self, auto_number: bool) -> None:
         self.attribute_list.auto_number = auto_number
+
+    @property
+    def assigned_prodiag_fb(self) -> str:
+        return self.attribute_list.assigned_prodiag_fb
+
+    @assigned_prodiag_fb.setter
+    def assigned_prodiag_fb(self, assigned_prodiag_fb: str) -> None:
+        self.attribute_list.assigned_prodiag_fb = assigned_prodiag_fb
 
     @property
     def number(self) -> str:

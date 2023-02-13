@@ -44,8 +44,8 @@ class NetworkSource(XMLBase):
     def get_part(self, name: str) -> Optional[list[Part]]:
         return self.flg_net.get_part(name)
 
-    def add_call(self, name: str, block_type: str) -> Call:
-        return self.flg_net.add_call(name, block_type)
+    def add_call(self, name: str, block_type: str, instance_db_name: str, current_block_type: str) -> Call:
+        return self.flg_net.add_call(name, block_type, instance_db_name, current_block_type)
 
     def get_call(self, name: str) -> Optional[list[Call]]:
         return self.flg_net.get_call(name)
