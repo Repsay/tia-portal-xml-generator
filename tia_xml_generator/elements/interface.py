@@ -38,6 +38,22 @@ class InterfaceSectionsDB(XMLBase):
         self.add([self.static])
 
 
+class InterfaceSectionsOB(XMLBase):
+    element_name = "Sections"
+
+    def __init__(self):
+        super().__init__()
+        self.element = ET.Element(
+            self.element_name, {"xmlns": "http://www.siemens.com/automation/Openness/SW/Interface/v3"}
+        )
+
+        self.input = Section("Input")
+        self.temp = Section("Temp")
+        self.constant = Section("Constant")
+
+        self.add([self.input, self.temp, self.constant])
+
+
 class Interface(XMLBase):
     element_name = "Interface"
 
@@ -61,4 +77,17 @@ class InterfaceDB(XMLBase):
 
     def load_sections(self) -> None:
         self.sections = InterfaceSectionsDB()
+        self.add(self.sections)
+
+
+class InterfaceOB(XMLBase):
+    element_name = "Interface"
+
+    def __init__(self):
+        super().__init__()
+        self.element = ET.Element(self.element_name)
+        self.load_sections()
+
+    def load_sections(self) -> None:
+        self.sections = InterfaceSectionsOB()
         self.add(self.sections)

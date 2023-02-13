@@ -85,14 +85,17 @@ class FlgNet(XMLBase):
     def get_part(self, name: str) -> Optional[list[Part]]:
         return self.parts.get_part(name)
 
-    def add_call(self, name: str, block_type: str) -> Call:
+    def add_call(self, name: str, block_type: str, instance_db_name: str, current_block_type: str) -> Call:
         if self.parts.part_id < self.wires.wire_id:
             self.parts.part_id = self.wires.wire_id
 
-        call = self.parts.add_call(name, block_type)
+        call = self.parts.add_call(name, block_type, instance_db_name)
 
         wire = self.add_wire("NameCon", call.id, "en")
-        wire.add_connection("OpenCon", self.wires.get_wire_id())
+        if current_block_type == "FB":
+            wire.add_connection("OpenCon", self.wires.get_wire_id())
+        elif current_block_type == "OB":
+            wire.add_powerrail()
 
         return call
 

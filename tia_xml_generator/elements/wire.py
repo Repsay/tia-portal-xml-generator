@@ -31,6 +31,11 @@ class Wire(XMLBase):
         self.add(connection)
         return connection
 
+    def add_powerrail(self) -> Connection:
+        connection = Connection("Powerrail", None, None)
+        self.add(connection)
+        return connection
+
     def get_connections(self) -> list[Connection]:
         temp: list[Connection] = []
         for child in self.children:

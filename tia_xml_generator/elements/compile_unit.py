@@ -11,6 +11,7 @@ from tia_xml_generator.elements.wire import Wire
 from tia_xml_generator.enums import ProgrammingLanguage
 from tia_xml_generator.elements.object_list import ObjectList
 
+
 class AttributeListCompileUnit(AttributeList):
     def __init__(self):
         super().__init__()
@@ -26,6 +27,7 @@ class AttributeListCompileUnit(AttributeList):
     def programming_language(self, programming_language: ProgrammingLanguage) -> None:
         self.__programming_language.text = programming_language.name
 
+
 class ObjectListCompileUnit(ObjectList):
     def __init__(self, name: str, description: str):
         super().__init__()
@@ -37,6 +39,7 @@ class ObjectListCompileUnit(ObjectList):
 
         self.__title.add_text(name)
         self.__comment.add_text(description)
+
 
 class CompileUnit(XMLBase):
     element_name = "SW.Blocks.CompileUnit"
@@ -67,8 +70,8 @@ class CompileUnit(XMLBase):
     def add_part(self, name: str, version: Optional[str] = None) -> Part:
         return self.network_source.add_part(name, version)
 
-    def add_call(self, name: str, block_type: str) -> Call:
-        return self.network_source.add_call(name, block_type)
+    def add_call(self, name: str, block_type: str, instance_db_name: str, current_block_type: str) -> Call:
+        return self.network_source.add_call(name, block_type, instance_db_name, current_block_type)
 
     def add_wire(self, type: str, source: Optional[int], target: Optional[str]):
         return self.network_source.add_wire(type, source, target)

@@ -3,17 +3,17 @@ from typing import Optional
 import xml.etree.ElementTree as ET
 from tia_xml_generator.elements.compile_unit import CompileUnit
 from tia_xml_generator.elements.multilingual_text import MultilingualText
-from tia_xml_generator.enums import ProgrammingLanguage
+from tia_xml_generator.enums import ProgrammingLanguage, SecondaryType
 from tia_xml_generator.elements.attribute_list import AttributeList
 
 from tia_xml_generator.elements.basis import XMLBase
 from tia_xml_generator.elements.blocks import Block
-from tia_xml_generator.elements.interface import Interface
+from tia_xml_generator.elements.interface import InterfaceOB
 from tia_xml_generator.elements.member import Member
 from tia_xml_generator.elements.object_list import ObjectList
 
 
-class AttributeListFB(AttributeList):
+class AttributeListOB(AttributeList):
     def __init__(self):
         super().__init__()
         self.__name = ET.Element("Name")
@@ -25,7 +25,9 @@ class AttributeListFB(AttributeList):
         self.__memory_layout = ET.Element("MemoryLayout")
         self.__number = ET.Element("Number")
         self.__programming_language = ET.Element("ProgrammingLanguage")
+        self.__secondary_type = ET.Element("SecondaryType")
         # TODO: Add all attributes
+        self.__assigned_prodiag_fb = ET.Element("AssignedProDiagFB")
         self.__supervisions = ET.Element("Supervisions")
         self.__is_iec_check_enabled = ET.Element("IsIECCheckEnabled")
         self.__is_retain_mem_res_enabled = ET.Element("IsRetainMemResEnabled")
@@ -35,12 +37,11 @@ class AttributeListFB(AttributeList):
         self.__uda_block_properties = ET.Element("UDABlockProperties")
         self.__uda_enable_tag_readback = ET.Element("UDAEnableTagReadback")
         self.__library_conformance_status = ET.Element("LibraryConformanceStatus")
-        self.element.extend([self.__name, self.__programming_language])
-        self.auto_number = True
+        self.element.extend([self.__name, self.__programming_language, self.__secondary_type])
         self.load_interface()
 
     def load_interface(self) -> None:
-        self.interface = Interface()
+        self.interface = InterfaceOB()
         self.add(self.interface)
 
     @property
@@ -156,8 +157,20 @@ class AttributeListFB(AttributeList):
         if self.element.find("Number") is None and self.auto_number is False:
             self.element.append(self.__number)
 
+    @property
+    def secondary_type(self) -> str:
+        if self.__secondary_type.text is None:
+            return ""
+        return self.__secondary_type.text
 
-class ObjectListFB(ObjectList):
+    @secondary_type.setter
+    def secondary_type(self, secondary_type: SecondaryType) -> None:
+        self.__secondary_type.text = secondary_type.name
+        if self.element.find("SecondaryType") is None:
+            self.element.append(self.__secondary_type)
+
+
+class ObjectListOB(ObjectList):
 
     network_groups: dict[str, int]
 
@@ -224,36 +237,30 @@ class ObjectListFB(ObjectList):
         return self_.element
 
 
-class FB(XMLBase, Block):
-    element_name = "SW.Blocks.FB"
-    attribute_list: AttributeListFB
+class OB(XMLBase, Block):
+    element_name = "SW.Blocks.OB"
+    attribute_list: AttributeListOB
 
-    def __init__(self, name: str, programming_language: ProgrammingLanguage, description: str):
+    def __init__(
+        self, name: str, programming_language: ProgrammingLanguage, description: str, secondary_type: SecondaryType
+    ):
         super().__init__()
         self.load_attribute_list()
         self.id = self.global_id.next()
         self.description = description
         self.name = name
         self.programming_language = programming_language
+        self.secondary_type = secondary_type
         self.element = ET.Element(self.element_name, {"ID": self.id})
         self.load_object_list()
 
     def load_attribute_list(self) -> None:
-        self.attribute_list = AttributeListFB()
+        self.attribute_list = AttributeListOB()
         self.add(self.attribute_list)
 
     def load_object_list(self) -> None:
-        self.object_list = ObjectListFB(self.name, self.description)
+        self.object_list = ObjectListOB(self.name, self.description)
         self.add(self.object_list)
-
-    def add_input(self, name: str, data_type: str) -> Member:
-        return self.attribute_list.interface.sections.input.add_member(name, data_type)
-
-    def add_output(self, name: str, data_type: str) -> Member:
-        return self.attribute_list.interface.sections.output.add_member(name, data_type)
-
-    def add_in_out(self, name: str, data_type: str) -> Member:
-        return self.attribute_list.interface.sections.in_out.add_member(name, data_type)
 
     def add_temp(self, name: str, data_type: str) -> Member:
         return self.attribute_list.interface.sections.temp.add_member(name, data_type)
@@ -261,26 +268,14 @@ class FB(XMLBase, Block):
     def add_constant(self, name: str, data_type: str) -> Member:
         return self.attribute_list.interface.sections.constant.add_member(name, data_type)
 
-    def add_static(self, name: str, data_type: str) -> Member:
-        return self.attribute_list.interface.sections.static.add_member(name, data_type)
-
     def get_input(self, name: str) -> Optional[Member]:
         return self.attribute_list.interface.sections.input.get_member(name)
-
-    def get_output(self, name: str) -> Optional[Member]:
-        return self.attribute_list.interface.sections.output.get_member(name)
-
-    def get_in_out(self, name: str) -> Optional[Member]:
-        return self.attribute_list.interface.sections.in_out.get_member(name)
 
     def get_temp(self, name: str) -> Optional[Member]:
         return self.attribute_list.interface.sections.temp.get_member(name)
 
     def get_constant(self, name: str) -> Optional[Member]:
         return self.attribute_list.interface.sections.constant.get_member(name)
-
-    def get_static(self, name: str) -> Optional[Member]:
-        return self.attribute_list.interface.sections.static.get_member(name)
 
     def add_network(
         self,
@@ -396,6 +391,14 @@ class FB(XMLBase, Block):
         self.attribute_list.programming_language = programming_language
 
     @property
+    def secondary_type(self) -> str:
+        return self.attribute_list.secondary_type
+
+    @secondary_type.setter
+    def secondary_type(self, secondary_type: SecondaryType) -> None:
+        self.attribute_list.secondary_type = secondary_type
+
+    @property
     def name(self) -> str:
         return self.attribute_list.name
 
@@ -412,22 +415,6 @@ class FB(XMLBase, Block):
         raise AttributeError("Inputs cannot be set")
 
     @property
-    def outputs(self) -> list[Member]:
-        return self.attribute_list.interface.sections.output.members
-
-    @outputs.setter
-    def outputs(self, outputs: list[Member]) -> None:
-        raise AttributeError("Outputs cannot be set")
-
-    @property
-    def in_outs(self) -> list[Member]:
-        return self.attribute_list.interface.sections.in_out.members
-
-    @in_outs.setter
-    def in_outs(self, in_outs: list[Member]) -> None:
-        raise AttributeError("In outs cannot be set")
-
-    @property
     def temps(self) -> list[Member]:
         return self.attribute_list.interface.sections.temp.members
 
@@ -442,14 +429,6 @@ class FB(XMLBase, Block):
     @constants.setter
     def constants(self, constants: list[Member]) -> None:
         raise AttributeError("Constants cannot be set")
-
-    @property
-    def statics(self) -> list[Member]:
-        return self.attribute_list.interface.sections.static.members
-
-    @statics.setter
-    def statics(self, statics: list[Member]) -> None:
-        raise AttributeError("Statics cannot be set")
 
     @property
     def networks(self) -> list[CompileUnit]:
