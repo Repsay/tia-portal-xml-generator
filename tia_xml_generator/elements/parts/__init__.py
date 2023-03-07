@@ -101,12 +101,20 @@ class Parts(XMLBase):
         else:
             return temp
 
-    def add_call(self, name: str, block_type: str, instance_db_name: str) -> Call:
+    def add_call(
+        self, name: str, block_type: Optional[str], reference: Optional[str], reference_type: Optional[str]
+    ) -> Call:
         call = Call(self.part_id, name, block_type)
         self.part_id += 1
-        call.add_instance_db(self.part_id, instance_db_name)
+        if not reference is None and not reference_type is None:
+            if reference_type == "DB":
+                call.add_instance_db(self.part_id, reference)
+            elif reference_type == "Variable":
+                call.add_instance_variable(self.part_id, reference)
+            else:
+                raise ValueError(f"Reference type '{reference_type}' is not supported")
+            self.part_id += 1
         self.add(call)
-        self.part_id += 1
         return call
 
     def get_call(self, name: str) -> Optional[list[Call]]:

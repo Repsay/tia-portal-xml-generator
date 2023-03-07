@@ -70,8 +70,15 @@ class CompileUnit(XMLBase):
     def add_part(self, name: str, version: Optional[str] = None) -> Part:
         return self.network_source.add_part(name, version)
 
-    def add_call(self, name: str, block_type: str, instance_db_name: str, current_block_type: str) -> Call:
-        return self.network_source.add_call(name, block_type, instance_db_name, current_block_type)
+    def add_call(
+        self,
+        name: str,
+        current_block_type: str,
+        block_type: Optional[str] = None,
+        reference: Optional[str] = None,
+        reference_type: Optional[str] = None,
+    ) -> Call:
+        return self.network_source.add_call(name, current_block_type, block_type, reference, reference_type)
 
     def add_wire(self, type: str, source: Optional[int], target: Optional[str]):
         return self.network_source.add_wire(type, source, target)
