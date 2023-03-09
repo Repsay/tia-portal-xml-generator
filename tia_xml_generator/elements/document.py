@@ -23,13 +23,11 @@ class Document(XMLBase):
         if not os.path.exists(self.template_path):
             os.mkdir(self.template_path)
 
-        if not self.import_path is None:
-            if not os.path.exists(self.import_path):
-                os.mkdir(self.import_path)
+        if not os.path.exists(self.import_path):
+            os.mkdir(self.import_path)
 
-        if not self.temp_path is None:
-            if not os.path.exists(self.temp_path):
-                os.mkdir(self.temp_path)
+        if not os.path.exists(self.temp_path):
+            os.mkdir(self.temp_path)
 
     @property
     def fbs(self) -> list[FB]:
@@ -146,9 +144,8 @@ class Document(XMLBase):
             if not os.path.exists(doc.template_path):
                 os.mkdir(doc.template_path)
 
-            if not doc.import_path is None:
-                if not os.path.exists(doc.import_path):
-                    os.mkdir(doc.import_path)
+            if not os.path.exists(doc.import_path):
+                os.mkdir(doc.import_path)
 
             doc.global_id.reset(doc.global_id_saved)
             doc.global_id_saved = None
@@ -348,9 +345,7 @@ class Document(XMLBase):
     def save(self, file_name: str) -> str:
         """Saves the document."""
         tree = ET.ElementTree(self.build())
-        path = (
-            os.path.join(self.import_path, f"{file_name}.xml") if not self.import_path is None else f"{file_name}.xml"
-        )
+        path = os.path.join(self.import_path, f"{file_name}.xml")
         if os.path.isfile(path):
             os.remove(path)
         tree.write(path, encoding="utf-8", xml_declaration=True)
@@ -360,11 +355,7 @@ class Document(XMLBase):
     def save_no_call(self, file_name: str) -> str:
         """Saves the document without the calls."""
         tree = ET.ElementTree(self.build_no_call())
-        path = (
-            os.path.join(self.import_path, f"{file_name}_no_call.xml")
-            if not self.import_path is None
-            else f"{file_name}_no_call.xml"
-        )
+        path = os.path.join(self.import_path, f"{file_name}_no_call.xml")
         if os.path.isfile(path):
             os.remove(path)
         tree.write(path, encoding="utf-8", xml_declaration=True)
