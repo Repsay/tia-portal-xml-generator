@@ -203,6 +203,8 @@ class DB(XMLBase, Block):
         self.add(self.object_list)
 
     def add_static(self, name: str, data_type: str) -> Member:
+        if self.get_static(name) is not None:
+            raise ValueError(f"Static member {name} already exists")
         return self.attribute_list.interface.sections.static.add_member(name, data_type)
 
     def get_static(self, name: str) -> Optional[Member]:
