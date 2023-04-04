@@ -5,6 +5,7 @@ class ProgrammingLanguage(Enum):
     LAD = 1
     FBD = 2
     DB = 3
+    GRAPH = 4
 
 
 class Remanence(Enum):
